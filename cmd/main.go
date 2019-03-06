@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"log"
 	"net"
 	"os"
 )
@@ -17,16 +18,25 @@ func main() {
 	fmt.Println("hello", name)
 
 	// TCP サーバを立ち上げる
-	listen, _ := net.Listen("tcp", "127.0.0.1:8888")
+	listen, err := net.Listen("tcp", "127.0.0.1:8888")
+	if err != nil {
+		log.Fatalln("Listen failure:", err)
+	}
 	fmt.Println("Listen 127.0.0.1:8888")
 
 	// クライアントからの通信を待って、 Connection を張る
-	conn, _ := listen.Accept()
+	conn, err := listen.Accept()
+	if err != nil {
+		log.Fatalln("Connection failure:", err)
+	}
 
 	// クライアントから送信されたデータを読み込む
 	// n はデータ長（バイト）
 	buf := make([]byte, 1024)
-	n, _ := conn.Read(buf)
+	n, err := conn.Read(buf)
+	if err != nil {
+		log.Fatalln("Read data failure:", err)
+	}
 
 	// buf の n バイト目までを文字列化して出力
 	fmt.Printf("[Message]\n%s", string(buf[:n]))
